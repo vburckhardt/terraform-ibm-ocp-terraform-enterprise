@@ -31,5 +31,5 @@ provider "kubectl" {
 
 provider "tfe" {
   hostname = module.tfe_install.tfe_hostname
-  token    = base64encode(module.tfe_install.token)
+  token    = module.tfe_install.token
 }
