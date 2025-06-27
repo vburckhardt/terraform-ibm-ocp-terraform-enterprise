@@ -16,3 +16,9 @@ output "tfe_hostname" {
   value       = module.tfe_install.tfe_hostname
   description = "The hostname for TFE instance"
 }
+
+output "token" {
+  value       = nonsensitive(module.tfe_install.token)
+  description = "The token for TFE instance"
+  sensitive   = false
+}

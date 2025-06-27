@@ -24,3 +24,9 @@ output "tfe_hostname" {
   description = "The hostname for TFE instance"
   value       = data.kubernetes_resource.tfe_route.object.status.ingress[0].host
 }
+
+output "token" {
+  description = "The token for TFE instance"
+  value       = nonsensitive(resource.kubernetes_secret.tfe_admin_token.data["token"])
+  sensitive   = false
+}

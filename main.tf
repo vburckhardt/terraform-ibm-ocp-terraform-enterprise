@@ -105,3 +105,8 @@ module "tfe_install" {
   admin_password = var.admin_password
   admin_email    = var.admin_email
 }
+
+resource "tfe_organization" "tfe_org" {
+  name  = "ibm_cloud"
+  email = var.admin_email
+}
