@@ -1,4 +1,3 @@
-
 data "ibm_container_vpc_cluster" "cluster" {
   cluster_name_id   = var.cluster_id
   resource_group_id = var.cluster_resource_group_id
@@ -358,16 +357,17 @@ resource "kubectl_manifest" "tfe_route" {
   YAML
 }
 
-
-resource "null_resource" "create_admin_user" {
+data "external" "admin_user_token" {
   depends_on = [kubectl_manifest.tfe_route]
-
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/create_admin_user.sh ${local.tfe_hostname} ${random_string.iact_token.result} ${var.admin_username} ${var.admin_email} ${var.admin_password}"
-  }
+  program = [
+    "${path.module}/scripts/create_admin_user.sh",
+    local.tfe_hostname,
+    random_string.iact_token.result,
+    var.admin_username,
+    var.admin_email,
+    var.admin_password
+  ]
 }
-
-
 
 ### Build custom TFE agent image
 resource "kubectl_manifest" "tfe_agent_image_stream" {
@@ -442,4 +442,29 @@ data "kubernetes_resource" "tfe_route" {
     name      = local.route_name
     namespace = kubernetes_namespace.tfe.metadata[0].name
   }
+}
+
+data "kubernetes_secret" "tfe_admin_token" {
+  depends_on = [data.external.admin_user_token]
+  metadata {
+    name      = "tfe-admin-token"
+    namespace = kubernetes_namespace.tfe.metadata[0].name
+  }
+}
+
+resource "kubernetes_secret" "tfe_admin_token" {
+  depends_on = [data.external.admin_user_token]
+
+  metadata {
+    name      = "tfe-admin-token"
+    namespace = kubernetes_namespace.tfe.metadata[0].name
+  }
+  data = {
+    token = (
+      data.external.admin_user_token.result["token"] != null && data.external.admin_user_token.result["token"] != ""
+      ? data.external.admin_user_token.result["token"]
+      : (try(data.kubernetes_secret.tfe_admin_token.data.token, ""))
+    )
+  }
+  type = "Opaque"
 }

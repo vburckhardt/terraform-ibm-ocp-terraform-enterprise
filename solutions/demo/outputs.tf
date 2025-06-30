@@ -37,3 +37,8 @@ output "tfe_hostname" {
   value       = module.tfe.tfe_hostname
   description = "hostname of TFE"
 }
+
+output "tfe_token" {
+  value       = module.tfe.token
+  description = "token of TFE"
+}

@@ -2,7 +2,6 @@
 
 # Exit on any error
 set -e
-set -x
 
 TFE_HOSTNAME=$1
 IACT_TOKEN=$2
@@ -36,18 +35,20 @@ while [ $ATTEMPT -le $MAX_RETRIES ]; do
   TOKEN=$(echo "$RESPONSE" | grep -o '"token": *"[^"]*"' | cut -d'"' -f4)
 
   if [ "$STATUS" == "created" ] && [ -n "$TOKEN" ]; then
-    echo "Successfully created admin user."
+    >&2 echo "Successfully created admin user."
+    echo "{\"token\": \"$TOKEN\"}"
     exit 0
   elif [ "$STATUS" == "error" ] && [ "$ERROR" == "admin user creation not allowed" ]; then
-    echo "Attempt $ATTEMPT: server response: $ERROR. This is expected if the admin user already exists. Exiting successfully."
+    >&2 echo "Attempt $ATTEMPT: server response: $ERROR. This is expected if the admin user already exists. Exiting successfully."
+    echo "{\"token\": \"\"}"
     exit 0
   else
-    echo "Attempt $ATTEMPT: Unexpected response: $RESPONSE"
+    >&2 echo "Attempt $ATTEMPT: Unexpected response: $RESPONSE"
   fi
 
   sleep $RETRY_INTERVAL
   ATTEMPT=$((ATTEMPT + 1))
 done
 # If we reach here, it failed
-echo "{\"error\": \"Failed to create admin user after $MAX_RETRIES attempts.\"}"
+echo '{"error": "Failed to create admin user after 30 attempts."}'
 exit 1
