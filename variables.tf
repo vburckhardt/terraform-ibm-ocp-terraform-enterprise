@@ -72,6 +72,30 @@ variable "tfe_namespace" {
   default     = "tfe"
 }
 
+variable "add_to_catalog" {
+  description = "Whether to add this instance as an engine to your account's catalog settings. Defaults to true."
+  type        = bool
+  default     = true
+}
+
+variable "terraform_enterprise_engine_name" {
+  type        = string
+  description = "Name to give to the Terraform Enterprise engine in account catalog settings. Defaults to '{prefix}-tfe' if not set."
+  default     = null
+}
+
+variable "enable_automatic_deployable_architecture_creation" {
+  type        = bool
+  description = "Whether to automatically create Deployable Architectures in associated private catalog from workspace."
+  default     = false
+}
+
+variable "default_private_catalog_id" {
+  type        = string
+  description = "If `enable_deployable_architecture_creation` is true, specify the private catalog ID to create the Deployable Architectures in."
+  default     = null
+}
+
 ##############################################################################
 # COS
 ##############################################################################
