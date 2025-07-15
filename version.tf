@@ -24,5 +24,9 @@ terraform {
       source  = "hashicorp/tfe"
       version = ">= 0.33.0, <1.0.0"
     }
+    restapi = {
+      source  = "Mastercard/restapi"
+      version = ">= 1.20.0"
+    }
   }
 }

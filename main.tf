@@ -119,18 +119,6 @@ module "tfe_install" {
 
 data "ibm_cm_account" "cm_account" {}
 
-output "tfe_hostname" {
-  value       = module.tfe_install.tfe_hostname
-  description = "The hostname for TFE instance"
-}
-
-output "token" {
-  value       = nonsensitive(module.tfe_install.token)
-  description = "The token for TFE instance"
-  sensitive   = false
-}
-
-
 locals {
   terraform_enterprise_engine_name = var.terraform_enterprise_engine_name != null ? var.terraform_enterprise_engine_name : "${var.prefix}-tfe"
 
